@@ -21,7 +21,7 @@ uint8_t ShredderOnOff_1(uint8_t state)
 {
     if (isEmergencyStop)
     {
-        return 0;
+        return 1;
     }
 
     if (state)
@@ -61,7 +61,7 @@ uint8_t ShredderOnOff_2(uint8_t state)
 {
     if (isEmergencyStop)
     {
-        return 0;
+        return 1;
     }
 
     if (state)

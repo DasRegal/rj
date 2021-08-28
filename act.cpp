@@ -16,6 +16,8 @@ static uint8_t isEmergencyStop  = 0;
 static uint8_t is_UpStart       = 0;
 static uint8_t is_DownMidStart  = 0;
 static uint8_t is_DownBotStart  = 0;
+static uint8_t is_ActInStart    = 0;
+static uint8_t is_ActOutStart   = 0;
 
 int ActInit(void)
 {
@@ -359,6 +361,102 @@ int ActuatorDownBot(uint8_t state)
             ActStopV();
             is_DownBotStart = 0;
             Serial.println("[Actuator Down Bot] Stop by State");
+        }
+
+        return 0;
+    }
+}
+
+int ActuatorIn(uint8_t state)
+{
+    volatile unsigned long actHTimer;
+    if (state)
+    {
+        if (!is_ActInStart)
+        {
+            is_ActInStart = 1;
+            if (ActIn(RegGet(E_ACTUATOR_H_SPEED)) == 0)
+            {
+                ActHBlock();
+                actHTimer = millis();
+            }
+            else
+            {
+                Serial.println("[Actuator H In] Start Error");
+                RegSet(E_ACTUATOR_H_IN, 0);
+                is_ActInStart = 0;
+                return 1;
+            }
+        }
+
+        if (millis() - actHTimer >= (RegGet(E_ACTUATOR_H_TIME) * 1000) ||
+            IsEndstop(PIN_ENDSTOP_HOR_IN))
+        {
+            ActHUnblock();
+            ActStopH();
+            RegSet(E_ACTUATOR_H_IN, 0);
+            is_ActInStart = 0;
+            Serial.println("[Actuator H In] Stop by Event");
+        }
+
+        return 0;
+    }
+    else
+    {
+        if (is_ActInStart)
+        {
+            ActHUnblock();
+            ActStopH();
+            is_ActInStart = 0;
+            Serial.println("[Actuator H In] Stop by State");
+        }
+
+        return 0;
+    }
+}
+
+int ActuatorOut(uint8_t state)
+{
+    volatile unsigned long actHTimer;
+    if (state)
+    {
+        if (!is_ActOutStart)
+        {
+            is_ActOutStart = 1;
+            if (ActOut(RegGet(E_ACTUATOR_H_SPEED)) == 0)
+            {
+                ActHBlock();
+                actHTimer = millis();
+            }
+            else
+            {
+                Serial.println("[Actuator H Out] Start Error");
+                RegSet(E_ACTUATOR_H_OUT, 0);
+                is_ActOutStart = 0;
+                return 1;
+            }
+        }
+
+        if (millis() - actHTimer >= (RegGet(E_ACTUATOR_H_TIME) * 1000) ||
+            IsEndstop(PIN_ENDSTOP_HOR_OUT))
+        {
+            ActHUnblock();
+            ActStopH();
+            RegSet(E_ACTUATOR_H_OUT, 0);
+            is_ActOutStart = 0;
+            Serial.println("[Actuator H Out] Stop by Event");
+        }
+
+        return 0;
+    }
+    else
+    {
+        if (is_ActOutStart)
+        {
+            ActHUnblock();
+            ActStopH();
+            is_ActOutStart = 0;
+            Serial.println("[Actuator H Out] Stop by State");
         }
 
         return 0;

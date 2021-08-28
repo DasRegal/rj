@@ -18,6 +18,11 @@ int ActDisableV(void);
 int ActDisableH(void);
 int ActEnableV(void);
 int ActEnableH(void);
+int ActuatorUp(uint8_t state);
+int ActuatorDownMid(uint8_t state);
+int ActuatorDownBot(uint8_t state);
+int ActuatorIn(uint8_t state);
+int ActuatorOut(uint8_t state);
 void ActEmergencyStop(uint8_t state);
 
 #endif // _ACT_H
