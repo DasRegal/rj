@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <SPI.h>
+#include <Ethernet.h>
 #include "periph.h"
 #include "act.h"
 #include "endstop.h"
@@ -8,10 +10,29 @@
 
 void setup()
 {
+    Ethernet.begin(mac);
+    delay(1000);
+    Serial.begin(9600);
+
+    Serial.println("Started");
+
+    Serial.print("- Arduino's IP address   : ");
+    Serial.println(Ethernet.localIP());
+
+    Serial.print("- Gateway's IP address   : ");
+    Serial.println(Ethernet.gatewayIP());
+
+    Serial.print("- Network's subnet mask  : ");
+    Serial.println(Ethernet.subnetMask());
+
+    Serial.print("- DNS server's IP address: ");
+    Serial.println(Ethernet.dnsServerIP());
+
     RegInit();
     ActInit();
     ShredderInit();
     MixerInit();
+    DispenserInit();
 }
 
 void loop() {
@@ -24,4 +45,6 @@ void loop() {
     ActuatorIn(RegGet(E_ACTUATOR_H_IN));
     ActuatorOut(RegGet(E_ACTUATOR_H_OUT));
     MixerOnOff(RegGet(E_MIXER_ON_OFF));
+    DispDryOnOff(RegGet(E_DISPENSER_DRY_ON_OFF));
+    DispLiqOnOff(RegGet(E_DISPENSER_LIQ_ON_OFF));
 }
