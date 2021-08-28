@@ -47,4 +47,5 @@ void loop() {
     MixerOnOff(RegGet(E_MIXER_ON_OFF));
     DispDryOnOff(RegGet(E_DISPENSER_DRY_ON_OFF));
     DispLiqOnOff(RegGet(E_DISPENSER_LIQ_ON_OFF));
+    ServoSet(RegGet(E_SERVO_PWM));
 }
