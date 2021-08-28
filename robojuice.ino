@@ -7,9 +7,12 @@
 #include "shredder.h"
 #include "reg.h"
 #include "mixer.h"
+#include "dispenser.h"
+#include "servo.h"
 
 void setup()
 {
+    uint8_t mac[] = { 0x00, 0xAA, 0xBB, 0xCC, 0xDE, 0x02 };
     Ethernet.begin(mac);
     delay(1000);
     Serial.begin(9600);

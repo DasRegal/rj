@@ -1,5 +1,6 @@
 #include <Adafruit_PWMServoDriver.h>
 #include "servo.h"
+#include "reg.h"
 
 static Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40); // Установка адреса I2C 0x40
 static int oldVal = 441;

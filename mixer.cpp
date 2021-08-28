@@ -1,5 +1,7 @@
+#include "Arduino.h"
 #include "mixer.h"
 #include "periph.h"
+#include "reg.h"
 
 static uint8_t isEmergencyStop = 0;
 

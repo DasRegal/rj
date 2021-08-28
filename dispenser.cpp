@@ -1,4 +1,7 @@
+#include "Arduino.h"
 #include "dispenser.h"
+#include "periph.h"
+#include "reg.h"
 
 static int isStartDry   = 0;
 static int isStartLiq   = 0;
