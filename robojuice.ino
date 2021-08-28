@@ -33,6 +33,7 @@ void setup()
     ShredderInit();
     MixerInit();
     DispenserInit();
+    ServoInit();
 }
 
 void loop() {

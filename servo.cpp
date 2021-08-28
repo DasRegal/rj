@@ -33,6 +33,7 @@ void ServoEmergencyStop(uint8_t state)
         if (!isEmergencyStop)
         {
             isEmergencyStop = 1;
+            RegSet(E_SERVO_PWM, 441);
             pwm.setPWM(0, 0, 441);
         }  
     }
