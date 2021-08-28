@@ -21,5 +21,7 @@ void loop() {
     ActuatorUp(RegGet(E_ACTUATOR_V_UP_TOP));
     ActuatorDownMid(RegGet(E_ACTUATOR_V_DOWN_MID));
     ActuatorDownBot(RegGet(E_ACTUATOR_V_DOWN_BOT));
-    // MixerOnOff(RegGet());
+    ActuatorIn(RegGet(E_ACTUATOR_H_IN));
+    ActuatorOut(RegGet(E_ACTUATOR_H_OUT));
+    MixerOnOff(RegGet(E_MIXER_ON_OFF));
 }
