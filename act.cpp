@@ -124,7 +124,7 @@ int ActStopV(void)
 
   if (is_actVBusy)
   {
-    Serial.println("[Actuator] Stop is busy");
+    Serial.println("[Actuator] Vertical Stop is busy");
     return 1;
   }
 
@@ -140,7 +140,7 @@ int ActStopH(void)
 
   if (is_actHBusy)
   {
-    Serial.println("[Actuator] Stop is busy");
+    Serial.println("[Actuator] Horizontal Stop is busy");
     return 1;
   }
 
@@ -156,7 +156,7 @@ int ActDisableV(void)
 
   if (is_actVBusy)
   {
-    Serial.println("[Actuator] Disable is busy");
+    Serial.println("[Actuator] Vertical Disable is busy");
     return 1;
   }
 
@@ -172,7 +172,7 @@ int ActDisableH(void)
 
   if (is_actHBusy)
   {
-    Serial.println("[Actuator] Disable is busy");
+    Serial.println("[Actuator] Horizontal Disable is busy");
     return 1;
   }
 
@@ -188,7 +188,7 @@ int ActEnableV(void)
 
   if (is_actVBusy)
   {
-    Serial.println("[Actuator] Enable is busy");
+    Serial.println("[Actuator] Vertical Enable is busy");
     return 1;
   }
 
@@ -204,7 +204,7 @@ int ActEnableH(void)
 
   if (is_actHBusy)
   {
-    Serial.println("[Actuator] Enable is busy");
+    Serial.println("[Actuator] Horizontal Enable is busy");
     return 1;
   }
 
