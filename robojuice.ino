@@ -12,6 +12,7 @@
 #include "pump.h"
 #include "emergency_stop.h"
 #include "version.h"
+#include "heartbit.h"
 
 void setup()
 {
@@ -51,6 +52,7 @@ void setup()
 
     RegSet(E_VERSION, VERSION);
     RegSet(E_SUBVERSION, SUBVERSION);
+    HeartbitInit();
 }
 
 void loop() {
@@ -68,4 +70,5 @@ void loop() {
     ServoSet(RegGet(E_SERVO_PWM));
     PumpOnOff(RegGet(E_PUMP_ON_OFF));
     EmergencyStop(RegGet(E_EMERGENCY_STOP));
+    HeartBit(RegGet(E_HEARTBIT_START_STOP));
 }
