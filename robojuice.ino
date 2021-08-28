@@ -9,6 +9,7 @@
 #include "mixer.h"
 #include "dispenser.h"
 #include "servo.h"
+#include "pump.h"
 
 void setup()
 {
@@ -37,6 +38,7 @@ void setup()
     MixerInit();
     DispenserInit();
     ServoInit();
+    PumpInit();
 }
 
 void loop() {
@@ -52,4 +54,5 @@ void loop() {
     DispDryOnOff(RegGet(E_DISPENSER_DRY_ON_OFF));
     DispLiqOnOff(RegGet(E_DISPENSER_LIQ_ON_OFF));
     ServoSet(RegGet(E_SERVO_PWM));
+    PumpOnOff(RegGet(E_PUMP_ON_OFF));
 }
