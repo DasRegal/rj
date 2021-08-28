@@ -4,6 +4,7 @@
 #include "reg.h"
 
 static uint8_t isEmergencyStop = 0;
+static int oldState = 0;
 
 int MixerInit(void)
 {
@@ -12,7 +13,26 @@ int MixerInit(void)
 
 void MixerOnOff(int state)
 {
-    digitalWrite(PIN_MIXER, state);
+    if (isEmergencyStop)
+    {
+        RegSet(E_MIXER_ON_OFF, 0);
+        return;
+    }
+    
+    if (oldState != state)
+    {
+
+        digitalWrite(PIN_MIXER, state);
+        if (state)
+        {
+            Serial.println("[Mixer] Start");
+        }
+        else
+        {
+            Serial.println("[Mixer] Stop");
+        }
+        oldState = state;
+    }
 }
 
 void MixerEmergencyStop(uint8_t state)
@@ -24,6 +44,7 @@ void MixerEmergencyStop(uint8_t state)
             isEmergencyStop = 1;
             digitalWrite(PIN_MIXER, 0);
             RegSet(E_MIXER_ON_OFF, 0);
+            Serial.println("[Mixer] Emergency Stop");
         }  
     }
     else

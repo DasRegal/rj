@@ -11,6 +11,7 @@
 #include "servo.h"
 #include "pump.h"
 #include "emergency_stop.h"
+#include "version.h"
 
 void setup()
 {
@@ -18,6 +19,13 @@ void setup()
     Ethernet.begin(mac);
     delay(1000);
     Serial.begin(9600);
+
+    Serial.print("Version: ");
+    Serial.print(VERSION);
+    Serial.print(".");
+    Serial.println(SUBVERSION);
+    Serial.print("Commit: ");
+    Serial.println(COMMIT);
 
     Serial.println("Started");
 
@@ -40,6 +48,9 @@ void setup()
     DispenserInit();
     ServoInit();
     PumpInit();
+
+    RegSet(E_VERSION, VERSION);
+    RegSet(E_SUBVERSION, SUBVERSION);
 }
 
 void loop() {

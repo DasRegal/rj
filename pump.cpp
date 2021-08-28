@@ -17,6 +17,12 @@ int PumpOnOff(int state)
 {
     if (state)
     {
+        if (isEmergencyStop)
+        {
+            RegSet(E_PUMP_ON_OFF, 0);
+            return 0;
+        }
+
         if (!isStartPump)
         {
             isStartPump = 1;
@@ -57,6 +63,7 @@ void PumpEmergencyStop(uint8_t state)
             isStartPump = 0;
             digitalWrite(PIN_PUMP, 0);
             RegSet(E_PUMP_ON_OFF, 0);
+            Serial.println("[Pump] Emergency Stop");
         }  
     }
     else

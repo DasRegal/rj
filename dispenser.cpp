@@ -21,6 +21,12 @@ int DispDryOnOff(int state)
 {
     if(state)
     {
+        if (isEmergencyStop)
+        {
+            RegSet(E_DISPENSER_DRY_ON_OFF, 0);
+            return 0;
+        }
+
         if (!isStartDry)
         {
             isStartDry = 1;
@@ -68,6 +74,12 @@ int DispLiqOnOff(int state)
 {
     if (state)
     {
+        if (isEmergencyStop)
+        {
+            RegSet(E_DISPENSER_LIQ_ON_OFF, 0);
+            return 0;
+        }
+
         if (!isStartLiq)
         {
             isStartLiq = 1;
@@ -112,6 +124,8 @@ void DispenserEmergencyStop(uint8_t state)
             digitalWrite(PIN_DISP_MOTOR_LIQ, 0);
             RegSet(E_DISPENSER_DRY_ON_OFF, 0);
             RegSet(E_DISPENSER_LIQ_ON_OFF, 0);
+            Serial.println("[Dispenser] Disp Liq Emengercy Stop");
+            Serial.println("[Dispenser] Disp Dry Emengercy Stop");
         }  
     }
     else

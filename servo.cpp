@@ -22,6 +22,7 @@ int ServoSet(int val)
     {
         oldVal = RegGet(E_SERVO_PWM);
         pwm.setPWM(0, 0, oldVal);
+        Serial.println("[Servo] New value");
     }
 
     return 0;
@@ -36,6 +37,7 @@ void ServoEmergencyStop(uint8_t state)
             isEmergencyStop = 1;
             RegSet(E_SERVO_PWM, 441);
             pwm.setPWM(0, 0, 441);
+            Serial.println("[Servo] Emergency Stop");
         }  
     }
     else

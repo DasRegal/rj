@@ -62,7 +62,8 @@ enum
   E_ACTUATOR_H_IN,              // 51
   E_ACTUATOR_H_OUT,             // 52
 
-  E_VERSION = (REG_R_MAX - 1)   // 125
+  E_VERSION = (REG_R_MAX - 2),  // 124
+  E_SUBVERSION = (REG_R_MAX - 1)// 125
 };
 
 int RegInit(void);
