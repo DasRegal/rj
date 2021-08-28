@@ -21,6 +21,7 @@ uint8_t ShredderOnOff_1(uint8_t state)
 {
     if (isEmergencyStop)
     {
+        RegSet(E_SHREDDER_ON_OFF_1, 0);
         return 1;
     }
 
@@ -61,6 +62,7 @@ uint8_t ShredderOnOff_2(uint8_t state)
 {
     if (isEmergencyStop)
     {
+        RegSet(E_SHREDDER_ON_OFF_2, 0);
         return 1;
     }
 
@@ -110,6 +112,8 @@ void ShredderEmergencyStop(uint8_t state)
             digitalWrite(PIN_SHREDDER_2, 0);
             RegSet(E_SHREDDER_ON_OFF_1, 0);
             RegSet(E_SHREDDER_ON_OFF_2, 0);
+            Serial.println("[Shredder 1] Emergency Stop");
+            Serial.println("[Shredder 2] Emergency Stop");
         }  
     }
     else

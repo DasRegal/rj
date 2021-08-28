@@ -66,7 +66,7 @@ int ActIn(uint8_t speed)
     
   if (is_actHBusy)
   {
-    Serial.println("[Actuator] Horizontal In is busy");
+    Serial.println("[Actuator] Horizontal IN is busy");
     return 1;
   }
 
@@ -78,25 +78,31 @@ int ActIn(uint8_t speed)
 
 int ActOut(uint8_t speed)
 {
-  if (isEmergencyStop)
-    return 1;
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Horizontal Actuator Out Emergency Stop");
+        return 1;
+    }
     
-  if (is_actHBusy)
-  {
-    Serial.println("[Actuator] Horizontal Out is busy");
-    return 1;
-  }
+    if (is_actHBusy)
+    {
+        Serial.println("[Actuator] Horizontal OUT is busy");
+        return 1;
+    }
 
-  Serial.println("[Actuator] Horizontal OUT start");
-  motorActH.TurnRight(speed);
-  
-  return 0;
+    Serial.println("[Actuator] Horizontal OUT start");
+    motorActH.TurnRight(speed);
+
+    return 0;
 }
 
 int ActUp(uint8_t speed)
 {
     if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Vertical Actuator Up Emergency Stop");
         return 1;
+    }
 
     if (is_actVBusy)
     {
@@ -112,7 +118,10 @@ int ActUp(uint8_t speed)
 int ActDown(uint8_t speed)
 {
     if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Vertical Actuator Down Emergency Stop");
         return 1;
+    }
 
     if (is_actVBusy)
     {
@@ -127,100 +136,118 @@ int ActDown(uint8_t speed)
 
 int ActStopV(void)
 {
-  if (isEmergencyStop)
-    return 1;
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Vertical Actuator Stop Emergency Stop");
+        return 1;
+    }
 
-  if (is_actVBusy)
-  {
-    Serial.println("[Actuator] Vertical Stop is busy");
-    return 1;
-  }
+    if (is_actVBusy)
+    {
+        Serial.println("[Actuator] Vertical Stop is busy");
+        return 1;
+    }
 
-  Serial.println("[Actuator] Vertical Stop");
-  motorActV.Stop();
-  
-  return 0;
+    Serial.println("[Actuator] Vertical Stop");
+    motorActV.Stop();
+
+    return 0;
 }
 
 int ActStopH(void)
 {
-  if (isEmergencyStop)
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Horizontal Actuator Stop Emergency Stop");
+        return 0;
+    }
+
+    if (is_actHBusy)
+    {
+        Serial.println("[Actuator] Horizontal Stop is busy");
+        return 1;
+    }
+
+    Serial.println("[Actuator] Horizontal Stop");
+    motorActH.Stop();
+
     return 0;
-
-  if (is_actHBusy)
-  {
-    Serial.println("[Actuator] Horizontal Stop is busy");
-    return 1;
-  }
-
-  Serial.println("[Actuator] Horizontal Stop");
-  motorActH.Stop();
-  
-  return 0;
 }
 
 int ActDisableV(void)
 {
-  if (isEmergencyStop)
-    return 1;
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Vertical Actuator Disable Emergency Stop");
+        return 1;
+    }
 
-  if (is_actVBusy)
-  {
-    Serial.println("[Actuator] Vertical Disable is busy");
-    return 1;
-  }
+    if (is_actVBusy)
+    {
+        Serial.println("[Actuator] Vertical Disable is busy");
+        return 1;
+    }
 
-  motorActV.Disable();
-  
-  return 0;
+    motorActV.Disable();
+
+    return 0;
 }
 
 int ActDisableH(void)
 {
-  if (isEmergencyStop)
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Horizontal Actuator Disable Emergency Stop");
+        return 0;
+    }
+
+    if (is_actHBusy)
+    {
+        Serial.println("[Actuator] Horizontal Disable is busy");
+        return 1;
+    }
+
+    motorActH.Disable();
+
     return 0;
-
-  if (is_actHBusy)
-  {
-    Serial.println("[Actuator] Horizontal Disable is busy");
-    return 1;
-  }
-
-  motorActH.Disable();
-  
-  return 0;
 }
 
 int ActEnableV(void)
 {
-  if (isEmergencyStop)
-    return 1;
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Vertical Actuator Enable Emergency Stop");
+        return 1;
+    }
 
-  if (is_actVBusy)
-  {
-    Serial.println("[Actuator] Vertical Enable is busy");
-    return 1;
-  }
+    if (is_actVBusy)
+    {
+        Serial.println("[Actuator] Vertical Enable is busy");
+        return 1;
+    }
 
-  motorActV.Enable();
-  
-  return 0;
+    motorActV.Enable();
+
+    return 0;
 }
 
 int ActEnableH(void)
 {
-  if (isEmergencyStop)
-    return 1;
+    if (isEmergencyStop)
+    {
+        Serial.println("[Actuator] Horizontal Actuator Enable Emergency Stop");
+        return 1;
+    }
 
-  if (is_actHBusy)
-  {
-    Serial.println("[Actuator] Horizontal Enable is busy");
-    return 1;
-  }
+    if (is_actHBusy)
+    {
+        Serial.println("[Actuator] Horizontal Enable is busy");
+        return 1;
+    }
 
-  motorActH.Enable();
-  
-  return 0;
+    motorActH.Enable();
+
+    return 0;
 }
 
 int ActuatorUp(uint8_t state)
@@ -469,7 +496,6 @@ void ActEmergencyStop(uint8_t state)
     {
         if (!isEmergencyStop)
         {
-            isEmergencyStop = 1;
             motorActH.Disable();
             motorActV.Disable();
             RegSet(E_ACTUATOR_V_UP_TOP, 0);
@@ -484,6 +510,7 @@ void ActEmergencyStop(uint8_t state)
             is_UpStart = 0;
             is_DownMidStart  = 0;
             is_DownBotStart  = 0;
+            isEmergencyStop = 1;
         }  
     }
     else
