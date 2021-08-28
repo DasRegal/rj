@@ -10,6 +10,7 @@
 #include "dispenser.h"
 #include "servo.h"
 #include "pump.h"
+#include "emergency_stop.h"
 
 void setup()
 {
@@ -55,4 +56,5 @@ void loop() {
     DispLiqOnOff(RegGet(E_DISPENSER_LIQ_ON_OFF));
     ServoSet(RegGet(E_SERVO_PWM));
     PumpOnOff(RegGet(E_PUMP_ON_OFF));
+    EmergencyStop(RegGet(E_EMERGENCY_STOP));
 }
