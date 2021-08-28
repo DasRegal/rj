@@ -1,5 +1,8 @@
+#include "Arduino.h"
 #include "shredder.h"
 #include "periph.h"
+#include "endstop.h"
+#include "reg.h"
 
 static uint8_t isEmergencyStop = 0;
 static uint8_t isShredderStart_1 = 0;
@@ -14,72 +17,107 @@ void ShredderInit(void)
   isShredderStart_2 = 0;
 }
 
-//void ShredderOn_1(void)
-//{
-//  if (isEmergencyStop)
-//    return;
-//    
-//  digitalWrite(PIN_SHREDDER_1, 1);
-//}
-//
-//void ShredderOff_1(void)
-//{
-//  digitalWrite(PIN_SHREDDER_1, 0);
-//}
-//
-//void ShredderOn_2(void)
-//{
-//  if (isEmergencyStop)
-//    return;
-//    
-//  digitalWrite(PIN_SHREDDER_2, 1);
-//}
-//
-//void ShredderOff_2(void)
-//{
-//  digitalWrite(PIN_SHREDDER_2, 0);
-//}
-
 uint8_t ShredderOnOff_1(uint8_t state)
 {
-  if (state)
-  {
-    if (!isShredderStart_1)
+    if (isEmergencyStop)
     {
-      isShredderStart_1 = 1;
+        return 0;
+    }
+
+    if (state)
+    {
+        if (!IsEndstop(PIN_ENDSTOP_SHREDDER_1))
+        {
+            if (!isShredderStart_1)
+            {
+                isShredderStart_1 = 1;
+                Serial.println("[Shredder 1] Start");
+                digitalWrite(PIN_SHREDDER_1, 1);
+            }
+        }
+        else
+        {
+            isShredderStart_1 = 0;
+            Serial.println("[Shredder 1] Stop by EndStop");
+            digitalWrite(PIN_SHREDDER_1, 0);
+            RegSet(E_SHREDDER_ON_OFF_1, 0);
+            state = 0;
+        }
     }
     else
     {
-      
+        if (isShredderStart_1)
+        {
+            isShredderStart_1 = 0;
+            Serial.println("[Shredder 1] Stop by State");
+            digitalWrite(PIN_SHREDDER_1, 0);
+        }
     }
-  }
-  else
-  {
-    if (isShredderStart_1)
+
+    return 0;
+}
+
+uint8_t ShredderOnOff_2(uint8_t state)
+{
+    if (isEmergencyStop)
     {
-      isShredderStart_1 = 0;
-      digitalWrite(PIN_SHREDDER_1, 0);
+        return 0;
     }
-  }
+
+    if (state)
+    {
+        if (!IsEndstop(PIN_ENDSTOP_SHREDDER_2))
+        {
+            if (!isShredderStart_2)
+            {
+                isShredderStart_2 = 1;
+                Serial.println("[Shredder 2] Start");
+                digitalWrite(PIN_SHREDDER_2, 1);
+            }
+        }
+        else
+        {
+            isShredderStart_2 = 0;
+            Serial.println("[Shredder 2] Stop by EndStop");
+            digitalWrite(PIN_SHREDDER_2, 0);
+            RegSet(E_SHREDDER_ON_OFF_2, 0);
+            state = 0;
+        }
+    }
+    else
+    {
+        if (isShredderStart_2)
+        {
+            isShredderStart_2 = 0;
+            Serial.println("[Shredder 2] Stop by State");
+            digitalWrite(PIN_SHREDDER_2, 0);
+        }
+    }
+
+    return 0;
 }
 
 void ShredderEmergencyStop(uint8_t state)
 {
-  if (state)
-  {
-    if (!isEmergencyStop)
+    if (state)
     {
-      isEmergencyStop = 1;
-      digitalWrite(PIN_SHREDDER_1, 0);
-      digitalWrite(PIN_SHREDDER_2, 0);
-    }  
-  }
-  else
-  {
-    if (isEmergencyStop)
-    {
-      isEmergencyStop = 0;
+        if (!isEmergencyStop)
+        {
+            isEmergencyStop = 1;
+            isShredderStart_1 = 0;
+            isShredderStart_2 = 0;
+            digitalWrite(PIN_SHREDDER_1, 0);
+            digitalWrite(PIN_SHREDDER_2, 0);
+            RegSet(E_SHREDDER_ON_OFF_1, 0);
+            RegSet(E_SHREDDER_ON_OFF_2, 0);
+        }  
     }
-  }
+    else
+    {
+        if (isEmergencyStop)
+        {
+            isEmergencyStop = 0;
+        }
+    }
 }
 

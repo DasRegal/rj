@@ -24,6 +24,8 @@
 #define PIN_ENDSTOP_VER_BOT           A4  // A4/PF4 INPUT A4
 
 #define PIN_ENDSTOP_DISP_DRY          A5  // A5/PF5 INPUT A5
+#define PIN_ENDSTOP_SHREDDER_1        A6  // 
+#define PIN_ENDSTOP_SHREDDER_2        A7  // 
 #define PIN_DISP_MOTOR_DRY            26  // R4/PA4 RELAY R4
 
 #define PIN_DISP_MOTOR_LIQ            7   // D5/PH4 HEADER X1

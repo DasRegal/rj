@@ -2,15 +2,20 @@
 #include "Arduino.h"
 #include "act.h"
 #include "periph.h"
+#include "reg.h"
+#include "endstop.h"
 
 static BTS7960 motorActV(PIN_ACTUATOR_VERTICAL_L_EN, PIN_ACTUATOR_VERTICAL_R_EN,
                   PIN_ACTUATOR_VERTICAL_L_PWM, PIN_ACTUATOR_VERTICAL_R_PWM);
 static BTS7960 motorActH(PIN_ACTUATOR_HORIZONTAL_L_EN, PIN_ACTUATOR_HORIZONTAL_R_EN,
                   PIN_ACTUATOR_HORIZONTAL_L_PWM, PIN_ACTUATOR_HORIZONTAL_R_PWM);
                   
-static uint8_t is_actVBusy = 0;
-static uint8_t is_actHBusy = 0;
-static uint8_t isEmergencyStop = 0;
+static uint8_t is_actVBusy      = 0;
+static uint8_t is_actHBusy      = 0;
+static uint8_t isEmergencyStop  = 0;
+static uint8_t is_UpStart       = 0;
+static uint8_t is_DownMidStart  = 0;
+static uint8_t is_DownBotStart  = 0;
 
 int ActInit(void)
 {
@@ -55,7 +60,7 @@ int ActHUnblock(void)
 int ActIn(uint8_t speed)
 {
   if (isEmergencyStop)
-    return 0;
+    return 1;
     
   if (is_actHBusy)
   {
@@ -63,7 +68,7 @@ int ActIn(uint8_t speed)
     return 1;
   }
 
-  
+  Serial.println("[Actuator] Horizontal IN start");
   motorActH.TurnLeft(speed);
   
   return 0;
@@ -72,7 +77,7 @@ int ActIn(uint8_t speed)
 int ActOut(uint8_t speed)
 {
   if (isEmergencyStop)
-    return 0;
+    return 1;
     
   if (is_actHBusy)
   {
@@ -80,6 +85,7 @@ int ActOut(uint8_t speed)
     return 1;
   }
 
+  Serial.println("[Actuator] Horizontal OUT start");
   motorActH.TurnRight(speed);
   
   return 0;
@@ -87,40 +93,40 @@ int ActOut(uint8_t speed)
 
 int ActUp(uint8_t speed)
 {
-  if (isEmergencyStop)
+    if (isEmergencyStop)
+        return 1;
+
+    if (is_actVBusy)
+    {
+        return 1;
+    }
+
+    Serial.println("[Actuator] Vertical UP start");
+    motorActV.TurnRight(speed);
+
     return 0;
-
-  if (is_actVBusy)
-  {
-    Serial.println("[Actuator] Vertical Up is busy");
-    return 1;
-  }
-
-  motorActV.TurnRight(speed);
-  
-  return 0;
 }
 
 int ActDown(uint8_t speed)
 {
-  if (isEmergencyStop)
+    if (isEmergencyStop)
+        return 1;
+
+    if (is_actVBusy)
+    {
+        return 1;
+    }
+
+    Serial.println("[Actuator] Vertical DOWN start");
+    motorActV.TurnLeft(speed);
+
     return 0;
-
-  if (is_actVBusy)
-  {
-    Serial.println("[Actuator] Vertical Down is busy");
-    return 1;
-  }
-
-  motorActV.TurnLeft(speed);
-  
-  return 0;
 }
 
 int ActStopV(void)
 {
   if (isEmergencyStop)
-    return 0;
+    return 1;
 
   if (is_actVBusy)
   {
@@ -128,6 +134,7 @@ int ActStopV(void)
     return 1;
   }
 
+  Serial.println("[Actuator] Vertical Stop");
   motorActV.Stop();
   
   return 0;
@@ -144,6 +151,7 @@ int ActStopH(void)
     return 1;
   }
 
+  Serial.println("[Actuator] Horizontal Stop");
   motorActH.Stop();
   
   return 0;
@@ -152,7 +160,7 @@ int ActStopH(void)
 int ActDisableV(void)
 {
   if (isEmergencyStop)
-    return 0;
+    return 1;
 
   if (is_actVBusy)
   {
@@ -184,7 +192,7 @@ int ActDisableH(void)
 int ActEnableV(void)
 {
   if (isEmergencyStop)
-    return 0;
+    return 1;
 
   if (is_actVBusy)
   {
@@ -200,7 +208,7 @@ int ActEnableV(void)
 int ActEnableH(void)
 {
   if (isEmergencyStop)
-    return 0;
+    return 1;
 
   if (is_actHBusy)
   {
@@ -213,22 +221,180 @@ int ActEnableH(void)
   return 0;
 }
 
+int ActuatorUp(uint8_t state)
+{
+    volatile unsigned long actVTimer;
+    if (state)
+    {
+        if (!is_UpStart)
+        {
+            is_UpStart = 1;
+            if (ActUp(RegGet(E_ACTUATOR_V_SPEED)) == 0)
+            {
+                ActVBlock();
+                actVTimer = millis();
+            }
+            else
+            {
+                Serial.println("[Actuator Up] Start Error");
+                RegSet(E_ACTUATOR_V_UP_TOP, 0);
+                is_UpStart = 0;
+                return 1;
+            }
+        }
+
+        if (millis() - actVTimer >= (RegGet(E_ACTUATOR_V_TIME) * 1000) ||
+            IsEndstop(PIN_ENDSTOP_VER_TOP))
+        {
+            ActVUnblock();
+            ActStopV();
+            RegSet(E_ACTUATOR_V_UP_TOP, 0);
+            is_UpStart = 0;
+            Serial.println("[Actuator Up] Stop by Event");
+        }
+
+        return 0;
+    }
+    else
+    {
+        if (is_UpStart)
+        {
+            ActVUnblock();
+            ActStopV();
+            is_UpStart = 0;
+            Serial.println("[Actuator Up] Stop by State");
+        }
+
+        return 0;
+    }
+}
+
+int ActuatorDownMid(uint8_t state)
+{
+    volatile unsigned long actVTimer;
+    if (state)
+    {
+        if (!is_DownMidStart)
+        {
+            is_DownMidStart = 1;
+            if (ActDown(RegGet(E_ACTUATOR_V_SPEED)) == 0)
+            {
+                ActVBlock();
+                actVTimer = millis();
+            }
+            else
+            {
+                Serial.println("[Actuator Down Mid] Start Error");
+                RegSet(E_ACTUATOR_V_DOWN_MID, 0);
+                is_DownMidStart = 0;
+                return 1;
+            }
+        }
+
+        if (millis() - actVTimer >= (RegGet(E_ACTUATOR_V_TIME) * 1000) ||
+            IsEndstop(PIN_ENDSTOP_VER_MID))
+        {
+            ActVUnblock();
+            ActStopV();
+            RegSet(E_ACTUATOR_V_DOWN_MID, 0);
+            is_DownMidStart = 0;
+            Serial.println("[Actuator Down Mid] Stop by Event");
+        }
+
+        return 0;
+    }
+    else
+    {
+        if (is_DownMidStart)
+        {
+            ActVUnblock();
+            ActStopV();
+            is_DownMidStart = 0;
+            Serial.println("[Actuator Down Mid] Stop by State");
+        }
+
+        return 0;
+    }
+}
+
+int ActuatorDownBot(uint8_t state)
+{
+    volatile unsigned long actVTimer;
+    if (state)
+    {
+        if (!is_DownBotStart)
+        {
+            is_DownBotStart = 1;
+            if (ActDown(RegGet(E_ACTUATOR_V_SPEED)) == 0)
+            {
+                ActVBlock();
+                actVTimer = millis();
+            }
+            else
+            {
+                Serial.println("[Actuator Down Bot] Start Error");
+                RegSet(E_ACTUATOR_V_DOWN_BOT, 0);
+                is_DownBotStart = 0;
+                return 1;
+            }
+        }
+
+        if (millis() - actVTimer >= (RegGet(E_ACTUATOR_V_TIME) * 1000) ||
+            IsEndstop(PIN_ENDSTOP_VER_BOT))
+        {
+            ActVUnblock();
+            ActStopV();
+            RegSet(E_ACTUATOR_V_DOWN_BOT, 0);
+            is_DownBotStart = 0;
+            Serial.println("[Actuator Down Bot] Stop by Event");
+        }
+
+        return 0;
+    }
+    else
+    {
+        if (is_DownBotStart)
+        {
+            ActVUnblock();
+            ActStopV();
+            is_DownBotStart = 0;
+            Serial.println("[Actuator Down Bot] Stop by State");
+        }
+
+        return 0;
+    }
+}
+
 void ActEmergencyStop(uint8_t state)
 {
-  if (state)
-  {
-    if (!isEmergencyStop)
+    if (state)
     {
-      isEmergencyStop = 1;
-      motorActH.Disable();
-      motorActV.Disable();
-    }  
-  }
-  else
-  {
-    if (isEmergencyStop)
-    {
-      isEmergencyStop = 0;
+        if (!isEmergencyStop)
+        {
+            isEmergencyStop = 1;
+            motorActH.Disable();
+            motorActV.Disable();
+            RegSet(E_ACTUATOR_V_UP_TOP, 0);
+            RegSet(E_ACTUATOR_V_DOWN_MID, 0);
+            RegSet(E_ACTUATOR_V_DOWN_BOT, 0);
+            RegSet(E_ACTUATOR_H_IN, 0);
+            RegSet(E_ACTUATOR_H_OUT, 0);
+            ActVUnblock();
+            ActStopV();
+            ActHUnblock();
+            ActStopH();
+            is_UpStart = 0;
+            is_DownMidStart  = 0;
+            is_DownBotStart  = 0;
+        }  
     }
-  }
+    else
+    {
+        if (isEmergencyStop)
+        {
+            motorActH.Enable();
+            motorActV.Enable();
+            isEmergencyStop = 0;
+        }
+    }
 }
