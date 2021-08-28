@@ -18,7 +18,7 @@ void MixerOnOff(int state)
         RegSet(E_MIXER_ON_OFF, 0);
         return;
     }
-    
+
     if (oldState != state)
     {
 
@@ -41,6 +41,7 @@ void MixerEmergencyStop(uint8_t state)
     {
         if (!isEmergencyStop)
         {
+            oldState = 0;
             isEmergencyStop = 1;
             digitalWrite(PIN_MIXER, 0);
             RegSet(E_MIXER_ON_OFF, 0);
