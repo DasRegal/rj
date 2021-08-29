@@ -28,7 +28,6 @@ void HeartBit(int state)
                 if (!isHbSet)
                 {
                 	isHbSet = 1;
-                	Serial.println("[Heartbit]");
                 }
                 else
                 {

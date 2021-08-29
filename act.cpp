@@ -70,6 +70,7 @@ int ActIn(uint8_t speed)
     return 1;
   }
 
+  motorActH.Enable();
   Serial.println("[Actuator] Horizontal IN start");
   motorActH.TurnLeft(speed);
   
@@ -90,6 +91,7 @@ int ActOut(uint8_t speed)
         return 1;
     }
 
+    motorActH.Enable();
     Serial.println("[Actuator] Horizontal OUT start");
     motorActH.TurnRight(speed);
 
@@ -109,6 +111,7 @@ int ActUp(uint8_t speed)
         return 1;
     }
 
+    motorActV.Enable();
     Serial.println("[Actuator] Vertical UP start");
     motorActV.TurnRight(speed);
 
@@ -128,6 +131,7 @@ int ActDown(uint8_t speed)
         return 1;
     }
 
+    motorActV.Enable();
     Serial.println("[Actuator] Vertical DOWN start");
     motorActV.TurnLeft(speed);
 
@@ -148,6 +152,7 @@ int ActStopV(void)
         return 1;
     }
 
+    motorActV.Disable();
     Serial.println("[Actuator] Vertical Stop");
     motorActV.Stop();
 
@@ -168,6 +173,7 @@ int ActStopH(void)
         return 1;
     }
 
+    motorActH.Disable();
     Serial.println("[Actuator] Horizontal Stop");
     motorActH.Stop();
 
