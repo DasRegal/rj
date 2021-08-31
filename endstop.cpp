@@ -1,3 +1,4 @@
+#include <Controllino.h> 
 #include "Arduino.h"
 #include "endstop.h"
 #include "periph.h"
@@ -12,8 +13,8 @@ int EndstopInit(void)
     pinMode(PIN_ENDSTOP_VER_BOT, INPUT);        // Endstop V Actuator BOT Желтый
 
     pinMode(PIN_ENDSTOP_DISP_DRY, INPUT);       // Endstop Dry Disp
-    pinMode(PIN_ENDSTOP_SHREDDER_1, INPUT);     // Endstop Shredder 1
-    pinMode(PIN_ENDSTOP_SHREDDER_2, INPUT);     // Endstop Shredder 2
+    pinMode(CONTROLLINO_A6, INPUT);     // Endstop Shredder 1
+    pinMode(CONTROLLINO_A7, INPUT);     // Endstop Shredder 2
 
     return 0;
 }

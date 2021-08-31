@@ -1,3 +1,4 @@
+#include <Controllino.h> 
 #include "Arduino.h"
 #include "shredder.h"
 #include "periph.h"
@@ -27,7 +28,7 @@ uint8_t ShredderOnOff_1(uint8_t state)
 
     if (state)
     {
-        if (!IsEndstop(PIN_ENDSTOP_SHREDDER_1))
+        if (!digitalRead(CONTROLLINO_A6))
         {
             if (!isShredderStart_1)
             {
@@ -68,7 +69,7 @@ uint8_t ShredderOnOff_2(uint8_t state)
 
     if (state)
     {
-        if (IsEndstop(PIN_ENDSTOP_SHREDDER_2))
+        if (!digitalRead(CONTROLLINO_A7))
         {
             if (!isShredderStart_2)
             {
