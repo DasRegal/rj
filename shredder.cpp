@@ -28,7 +28,7 @@ uint8_t ShredderOnOff_1(uint8_t state)
 
     if (state)
     {
-        if (!digitalRead(CONTROLLINO_A6))
+        if (analogRead(CONTROLLINO_A6) < 600)
         {
             if (!isShredderStart_1)
             {
@@ -69,7 +69,7 @@ uint8_t ShredderOnOff_2(uint8_t state)
 
     if (state)
     {
-        if (!digitalRead(CONTROLLINO_A7))
+        if (analogRead(CONTROLLINO_A7) < 600)
         {
             if (!isShredderStart_2)
             {
