@@ -27,7 +27,7 @@ uint8_t ShredderOnOff_1(uint8_t state)
 
     if (state)
     {
-        if (IsEndstop(PIN_ENDSTOP_SHREDDER_1))
+        if (!IsEndstop(PIN_ENDSTOP_SHREDDER_1))
         {
             if (!isShredderStart_1)
             {
